@@ -79,7 +79,7 @@ void Puncher::ctrl_callback()
         month = date->month();
         year = date->year();
 
-        insert_into_db(day, month, year, hours, minutes);
+        insert_into_db(day, month, year, hours, minutes, seconds);
         ctrl->setText("Start");
     } else {
         timer->start(1000);
@@ -141,9 +141,8 @@ void Puncher::update_displays()
     lcd_secs->display(display_str);
 }
 
-void Puncher::insert_into_db(int l_day, int l_month, int l_year, int l_hours, int l_minutes)
+void Puncher::insert_into_db(int l_day, int l_month, int l_year, int l_hours, int l_minutes, int l_seconds)
 {
-
     QSqlQuery qry;
 
     qry.prepare( "CREATE TABLE IF NOT EXISTS puncher_db (id INTEGER UNIQUE PRIMARY KEY, day VARCHAR(30), month VARCHAR(30), year VARCHAR(30), hours VARCHAR(30), minutes VARCHAR(30))" );
@@ -152,24 +151,32 @@ void Puncher::insert_into_db(int l_day, int l_month, int l_year, int l_hours, in
     else
         qDebug() << "Table created!";
 
-
-    //get id, if already exists
-
-    //if not create on a next free id
-
-    QString query = "INSERT INTO puncher_db (id, day, month, year, hours, minutes) VALUES (1, " +
-                  QString::number( l_day )     + ", " +
-                  QString::number( l_month )   + ", " +
-                  QString::number( l_year )    + ", " +
-                  QString::number( l_hours )   + ", " +
-                  QString::number( l_minutes ) + ")";
-
+    QString query = "UPDATE puncher_db SET hours='" +
+                  QString::number( l_hours )   + "', minutes='" +
+                  QString::number( l_minutes ) + "', seconds='" +
+                  QString::number( l_seconds ) + "' WHERE day='" +
+                  QString::number( l_day )     + "' AND month='" +
+                  QString::number( l_month )   + "' AND year='" +
+                  QString::number( l_year )    + "'";
 
     qry.prepare( query );
-    if( !qry_p.exec() )
-      qDebug() << qry_p.lastError();
-    else
-      qDebug( "Inserted!" );
+    if( !qry.exec() )
+    {
+        query = "INSERT INTO puncher_db (day, month, year, hours, minutes, seconds) VALUES (" +
+                      QString::number( l_day )     + ", " +
+                      QString::number( l_month )   + ", " +
+                      QString::number( l_year )    + ", " +
+                      QString::number( l_hours )   + ", " +
+                      QString::number( l_minutes ) + ", " +
+                      QString::number( l_seconds ) + ")";
 
+        qry.prepare( query );
+        if( !qry.exec() )
+          qDebug() << qry_p.lastError();
+        else
+          qDebug( "Inserted!" );
+    }
+    else
+        qDebug() << "Updated!";
 }
 

@@ -33,7 +33,7 @@ private slots:
     void ctrl_callback();
     void reset_callback();
     void update_displays();
-    void insert_into_db(int, int, int, int, int);
+    void insert_into_db(int, int, int, int, int, int);
 };
 
 #endif // PUNCHER_H

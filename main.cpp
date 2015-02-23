@@ -11,13 +11,14 @@ int main(int argc, char *argv[])
 
     QSqlDatabase db = QSqlDatabase::addDatabase( "QSQLITE" );
 
-    db.setDatabaseName( "./testdatabase_p.db" );
+    db.setDatabaseName( "./puncher_db.db" );
 
     if( !db.open() )
     {
       qDebug() << db.lastError();
       qFatal( "Failed to connect." );
     }
+
     qDebug( "Connected!" );
 
       /*qry.prepare( "INSERT INTO puncher_db (id, firstname, lastname) VALUES (1, 'John', 'Doe')" );
