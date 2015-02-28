@@ -145,7 +145,7 @@ void Puncher::insert_into_db(int l_day, int l_month, int l_year, int l_hours, in
 {
     QSqlQuery qry;
 
-    qry.prepare( "CREATE TABLE IF NOT EXISTS puncher_db (id INTEGER UNIQUE PRIMARY KEY, day VARCHAR(30), month VARCHAR(30), year VARCHAR(30), hours VARCHAR(30), minutes VARCHAR(30))" );
+    qry.prepare( "CREATE TABLE IF NOT EXISTS puncher_db (id INTEGER UNIQUE PRIMARY KEY, day VARCHAR(30), month VARCHAR(30), year VARCHAR(30), hours VARCHAR(30), minutes VARCHAR(30), seconds VARCHAR(30))" );
     if( !qry.exec() )
         qDebug() << qry.lastError();
     else
@@ -159,6 +159,15 @@ void Puncher::insert_into_db(int l_day, int l_month, int l_year, int l_hours, in
                   QString::number( l_month )   + "' AND year='" +
                   QString::number( l_year )    + "'";
 
+    query = "INSERT INTO puncher_db (day, month, year, hours, minutes, seconds) VALUES (" +
+                  QString::number( l_day )     + ", " +
+                  QString::number( l_month )   + ", " +
+                  QString::number( l_year )    + ", " +
+                  QString::number( l_hours )   + ", " +
+                  QString::number( l_minutes ) + ", " +
+                  QString::number( l_seconds ) + ")";
+
+
     qry.prepare( query );
     if( !qry.exec() )
     {
@@ -169,6 +178,7 @@ void Puncher::insert_into_db(int l_day, int l_month, int l_year, int l_hours, in
                       QString::number( l_hours )   + ", " +
                       QString::number( l_minutes ) + ", " +
                       QString::number( l_seconds ) + ")";
+
 
         qry.prepare( query );
         if( !qry.exec() )

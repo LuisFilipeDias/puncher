@@ -11,7 +11,7 @@ int main(int argc, char *argv[])
 
     QSqlDatabase db = QSqlDatabase::addDatabase( "QSQLITE" );
 
-    db.setDatabaseName( "./puncher_db.db" );
+    db.setDatabaseName( "./puncher_new.db" );
 
     if( !db.open() )
     {
