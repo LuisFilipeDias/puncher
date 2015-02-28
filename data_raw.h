@@ -15,6 +15,11 @@ public:
     explicit Data_raw(QWidget *parent = 0);
     ~Data_raw();
 
+private slots:
+    void on_data_raw_get_raw_clicked();
+
+    void on_data_raw_cancel_clicked();
+
 private:
     Ui::Data_raw *ui;
 };

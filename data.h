@@ -15,6 +15,13 @@ public:
     explicit Data(QWidget *parent = 0);
     ~Data();
 
+private slots:
+    void on_data_load_clicked();
+
+    void on_data_raw_clicked();
+
+    void on_data_cancel_clicked();
+
 private:
     Ui::Data *ui;
 };

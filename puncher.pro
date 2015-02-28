@@ -14,8 +14,14 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        puncher.cpp
+        puncher.cpp \
+    data.cpp \
+    data_raw.cpp
 
-HEADERS  += puncher.h
+HEADERS  += puncher.h \
+    data.h \
+    data_raw.h
 
-FORMS    += puncher.ui
+FORMS    += puncher.ui \
+    data.ui \
+    data_raw.ui

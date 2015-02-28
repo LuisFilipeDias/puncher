@@ -1,5 +1,7 @@
 #include "puncher.h"
 #include "ui_puncher.h"
+#include "data.h"
+#include "data_raw.h"
 #include <QTimer>
 #include <string>
 #include <stdio.h>
@@ -23,6 +25,11 @@ Puncher::Puncher(QWidget *parent) :
     connect(ctrl, SIGNAL(clicked()), this, SLOT(ctrl_callback()));
     connect(reset, SIGNAL(clicked()), this, SLOT(reset_callback()));
 
+    connect(check_logs, SIGNAL(triggered()), this, SLOT(check_logs_callback()));
+    connect(check_raw, SIGNAL(triggered()), this, SLOT(check_raw_callback()));
+    connect(close, SIGNAL(triggered()), this, SLOT(close_callback()));
+
+
 }
 
 void Puncher::init()
@@ -31,8 +38,13 @@ void Puncher::init()
 
     lcd = ui->lcdNumber;
     lcd_secs = ui->lcdNumber_secs;
+
     ctrl = ui->ctrlButton;
     reset = ui->resetButton;
+
+    check_logs = ui->actionCheck_Logs;
+    check_raw = ui->actionCheck_Raw;
+    close = ui->actionClose;
 
     lcd->setSegmentStyle(QLCDNumber::Flat);
     lcd->display("00");
@@ -190,3 +202,28 @@ void Puncher::insert_into_db(int l_day, int l_month, int l_year, int l_hours, in
         qDebug() << "Updated!";
 }
 
+void Puncher::check_logs_callback()
+{
+    qDebug() << "check_logs_callback";
+
+    Data spread;
+    spread.setModal(true);
+    spread.exec();
+    //hide();
+}
+
+void Puncher::check_raw_callback()
+{
+    qDebug() << "check_raw_callback";
+
+    Data_raw raw;
+    raw.setModal(true);
+    raw.exec();
+    //hide();
+}
+
+void Puncher::close_callback()
+{
+    qDebug() << "close_callback";
+    exit(0);
+}

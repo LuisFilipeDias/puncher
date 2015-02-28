@@ -21,6 +21,17 @@ int main(int argc, char *argv[])
 
     qDebug( "Connected!" );
 
+    Puncher w;
+    w.show();
+
+    return a.exec();
+}
+
+void quitting()
+{
+    qDebug( "Leaving app");
+}
+
       /*qry.prepare( "INSERT INTO puncher_db (id, firstname, lastname) VALUES (1, 'John', 'Doe')" );
       if( !qry.exec() )
         qDebug() << qry.lastError();
@@ -180,13 +191,3 @@ int main(int argc, char *argv[])
 
       db.close();
 */
-    Puncher w;
-    w.show();
-
-    return a.exec();
-}
-
-void quitting()
-{
-    qDebug( "Leaving app");
-}

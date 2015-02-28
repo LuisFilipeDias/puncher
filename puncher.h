@@ -24,16 +24,22 @@ private:
     QTimer * timer;
     QLCDNumber *lcd;
     QLCDNumber *lcd_secs;
-    QPushButton *ctrl, *reset;
+    QPushButton *ctrl, *reset, *extra;
     int seconds, minutes, hours, day, month, year;
+    QAction *check_logs, *check_raw, *close;
 
 private slots:
     void init();
     void timer_callback();
     void ctrl_callback();
     void reset_callback();
+    void check_logs_callback();
+    void check_raw_callback();
+    void close_callback();
     void update_displays();
     void insert_into_db(int, int, int, int, int, int);
+
 };
+
 
 #endif // PUNCHER_H
