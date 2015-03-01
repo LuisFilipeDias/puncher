@@ -8,6 +8,7 @@ Data_raw::Data_raw(QWidget *parent) :
     ui(new Ui::Data_raw)
 {
     ui->setupUi(this);
+    get_raw();
 }
 
 Data_raw::~Data_raw()
@@ -15,7 +16,7 @@ Data_raw::~Data_raw()
     delete ui;
 }
 
-void Data_raw::on_data_raw_get_raw_clicked()
+void Data_raw::get_raw()
 {
     QSqlQueryModel* model = new QSqlQueryModel();
     //QSqlQuery *qry;
@@ -28,6 +29,7 @@ void Data_raw::on_data_raw_get_raw_clicked()
     qry.prepare( "SELECT * FROM puncher_db" );
     if( !qry.exec() )
       qDebug() << qry.lastError();
+#ifdef DB_debug
     else
     {
       qDebug( "Selected!" );
@@ -43,6 +45,7 @@ void Data_raw::on_data_raw_get_raw_clicked()
         for( int c=0; c<cols; c++ )
           qDebug() << QString( "Row %1, %2: %3" ).arg( r ).arg( rec.fieldName(c) ).arg( qry.value(c).toString() );
     }
+#endif
 
     model->setQuery(qry);
     ui->tableView->setModel(model);

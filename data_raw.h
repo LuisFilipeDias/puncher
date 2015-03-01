@@ -16,7 +16,7 @@ public:
     ~Data_raw();
 
 private slots:
-    void on_data_raw_get_raw_clicked();
+    void get_raw();
 
     void on_data_raw_cancel_clicked();
 

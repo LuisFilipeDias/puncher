@@ -24,12 +24,9 @@ Puncher::Puncher(QWidget *parent) :
     connect(timer, SIGNAL(timeout()), this, SLOT(timer_callback()));
     connect(ctrl, SIGNAL(clicked()), this, SLOT(ctrl_callback()));
     connect(reset, SIGNAL(clicked()), this, SLOT(reset_callback()));
-
     connect(check_logs, SIGNAL(triggered()), this, SLOT(check_logs_callback()));
     connect(check_raw, SIGNAL(triggered()), this, SLOT(check_raw_callback()));
     connect(close, SIGNAL(triggered()), this, SLOT(close_callback()));
-
-
 }
 
 void Puncher::init()
@@ -38,20 +35,16 @@ void Puncher::init()
 
     lcd = ui->lcdNumber;
     lcd_secs = ui->lcdNumber_secs;
-
     ctrl = ui->ctrlButton;
     reset = ui->resetButton;
-
     check_logs = ui->actionCheck_Logs;
     check_raw = ui->actionCheck_Raw;
     close = ui->actionClose;
 
     lcd->setSegmentStyle(QLCDNumber::Flat);
     lcd->display("00");
-
     lcd_secs->setSegmentStyle(QLCDNumber::Flat);
     lcd_secs->display("00:00");
-
     ctrl->setText("Start");
 }
 
@@ -64,7 +57,7 @@ void Puncher::reset_callback()
 {
     QMessageBox msgBox;
 
-    if (timer->isActive()) {
+    if ((seconds + minutes + hours) != 0) {
         msgBox.setText("Do you want to Reset?");
         msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
         msgBox.setDefaultButton(QMessageBox::No);
@@ -81,7 +74,7 @@ void Puncher::reset_callback()
 
 void Puncher::ctrl_callback()
 {
-   if (timer->isActive()) {
+    if (timer->isActive()) {
         timer->stop();
 
         QDate *date = new QDate();
@@ -95,7 +88,7 @@ void Puncher::ctrl_callback()
         ctrl->setText("Start");
     } else {
         timer->start(1000);
-        ctrl->setText("Stop");
+        ctrl->setText("Pause");
     }
 }
 
@@ -156,60 +149,68 @@ void Puncher::update_displays()
 void Puncher::insert_into_db(int l_day, int l_month, int l_year, int l_hours, int l_minutes, int l_seconds)
 {
     QSqlQuery qry;
+    int rows = 0;
 
     qry.prepare( "CREATE TABLE IF NOT EXISTS puncher_db (id INTEGER UNIQUE PRIMARY KEY, day VARCHAR(30), month VARCHAR(30), year VARCHAR(30), hours VARCHAR(30), minutes VARCHAR(30), seconds VARCHAR(30))" );
-    if( !qry.exec() )
+    if (!qry.exec())
         qDebug() << qry.lastError();
     else
         qDebug() << "Table created!";
 
-    QString query = "UPDATE puncher_db SET hours='" +
-                  QString::number( l_hours )   + "', minutes='" +
-                  QString::number( l_minutes ) + "', seconds='" +
-                  QString::number( l_seconds ) + "' WHERE day='" +
-                  QString::number( l_day )     + "' AND month='" +
-                  QString::number( l_month )   + "' AND year='" +
-                  QString::number( l_year )    + "'";
+    QString qry_str = "SELECT * FROM puncher_db WHERE day='" +
+            QString::number( l_day )     + "' AND month='" +
+            QString::number( l_month )   + "' AND year='" +
+            QString::number( l_year )    + "'";
 
-    query = "INSERT INTO puncher_db (day, month, year, hours, minutes, seconds) VALUES (" +
-                  QString::number( l_day )     + ", " +
-                  QString::number( l_month )   + ", " +
-                  QString::number( l_year )    + ", " +
-                  QString::number( l_hours )   + ", " +
-                  QString::number( l_minutes ) + ", " +
-                  QString::number( l_seconds ) + ")";
+    qry.prepare(qry_str);
 
+    if (!qry.exec()) {
+        qDebug() << qry.lastError();
+    } else {
+        QSqlRecord rec = qry.record();
 
-    qry.prepare( query );
-    if( !qry.exec() )
-    {
-        query = "INSERT INTO puncher_db (day, month, year, hours, minutes, seconds) VALUES (" +
-                      QString::number( l_day )     + ", " +
-                      QString::number( l_month )   + ", " +
-                      QString::number( l_year )    + ", " +
-                      QString::number( l_hours )   + ", " +
-                      QString::number( l_minutes ) + ", " +
-                      QString::number( l_seconds ) + ")";
-
-
-        qry.prepare( query );
-        if( !qry.exec() )
-          qDebug() << qry_p.lastError();
-        else
-          qDebug( "Inserted!" );
+        int cols = rec.count();
+        for( rows=0; qry.next(); rows++ );
     }
-    else
-        qDebug() << "Updated!";
+
+    if (rows) {
+        QString qry_str = "UPDATE puncher_db SET hours='" +
+                QString::number( l_hours )   + "', minutes='" +
+                QString::number( l_minutes ) + "', seconds='" +
+                QString::number( l_seconds ) + "' WHERE day='" +
+                QString::number( l_day )     + "' AND month='" +
+                QString::number( l_month )   + "' AND year='" +
+                QString::number( l_year )    + "'";
+
+        qry.prepare(qry_str);
+        if (!qry.exec())
+            qDebug() << qry.lastError();
+        else
+            qDebug() << "Updated row!";
+    } else {
+        qry_str = "INSERT INTO puncher_db (day, month, year, hours, minutes, seconds) VALUES (" +
+                QString::number( l_day )     + ", " +
+                QString::number( l_month )   + ", " +
+                QString::number( l_year )    + ", " +
+                QString::number( l_hours )   + ", " +
+                QString::number( l_minutes ) + ", " +
+                QString::number( l_seconds ) + ")";
+
+        qry.prepare(qry_str);
+        if (!qry.exec())
+            qDebug() << qry.lastError();
+        else
+            qDebug() << "Inserted new row!";
+    }
 }
 
 void Puncher::check_logs_callback()
 {
     qDebug() << "check_logs_callback";
 
-    Data spread;
-    spread.setModal(true);
-    spread.exec();
-    //hide();
+    Data cal;
+    cal.setModal(true);
+    cal.exec();
 }
 
 void Puncher::check_raw_callback()
@@ -219,7 +220,6 @@ void Puncher::check_raw_callback()
     Data_raw raw;
     raw.setModal(true);
     raw.exec();
-    //hide();
 }
 
 void Puncher::close_callback()

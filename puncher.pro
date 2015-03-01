@@ -12,15 +12,16 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = puncher
 TEMPLATE = app
 
+#DEFINES += DB_debug
 
 SOURCES += main.cpp\
         puncher.cpp \
-    data.cpp \
-    data_raw.cpp
+    data_raw.cpp \
+    data.cpp
 
 HEADERS  += puncher.h \
-    data.h \
-    data_raw.h
+    data_raw.h \
+    data.h
 
 FORMS    += puncher.ui \
     data.ui \
