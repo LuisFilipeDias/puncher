@@ -11,6 +11,7 @@
 #include "puncher.h"
 #include "ui_data.h"
 #include "data_raw.h"
+#include "errcodes.h"
 #include "database.h"
 
 namespace Ui {
@@ -26,7 +27,8 @@ public:
     ~Data();
 
 private slots:
-    void fill_date();
+    status fill_date();
+
     void on_data_raw_clicked();
     void on_data_cancel_clicked();
     void on_data_update_clicked();

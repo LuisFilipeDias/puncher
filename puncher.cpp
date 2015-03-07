@@ -23,7 +23,12 @@ Puncher::Puncher(QWidget *parent) :
     connect(close, SIGNAL(triggered()), this, SLOT(close_callback()));
 }
 
-void Puncher::init()
+Puncher::~Puncher()
+{
+    delete ui;
+}
+
+status Puncher::init()
 {
     /* resetting the time for the day */
     seconds = minutes = hours = 0;
@@ -50,16 +55,17 @@ void Puncher::init()
     month = date->month();
     year = date->year();
 
-    if (status_ok != db->query(day, month, year, &hours, &minutes, &seconds))
+    if (status_ok != db->query(day, month, year, &hours, &minutes, &seconds)) {
         qDebug() << "*** ERROR: db->query ***";
-    else
-        update_displays();
+        return err_db;
+    } else {
+        if (status_ok != update_displays()) {
+            qDebug() << "*** ERROR: update_displays ***";
+            return err_db;
+        }
+    }
 
-}
-
-Puncher::~Puncher()
-{
-    delete ui;
+    return status_ok;
 }
 
 /* CALLBACKS ******************************************************************************************/
@@ -173,9 +179,9 @@ void Puncher::close_callback()
     exit(0);
 }
 
-/* AUXILIARY FUNCTIONS ******************************************************************************************/
+/* AUX FUNCTIONS ******************************************************************************************/
 
-void Puncher::update_displays()
+status Puncher::update_displays()
 {
     qDebug() << ":: update_displays ::";
     char display_str[6];
@@ -213,9 +219,11 @@ void Puncher::update_displays()
     }
 
     lcd_secs->display(display_str);
+
+    return status_ok;
 }
 
-void Puncher::get_hours(int l_hours, int l_minutes, int l_seconds)
+status Puncher::get_hours(int l_hours, int l_minutes, int l_seconds)
 {
     qDebug() << ":: get_hours ::";
 
@@ -223,6 +231,16 @@ void Puncher::get_hours(int l_hours, int l_minutes, int l_seconds)
     minutes = l_minutes;
     seconds = l_seconds;
 
-    update_displays();
+    if (status_ok != update_displays()) {
+        qDebug() << "*** ERROR: update_displays ***";
+        return err_db;
+    }
+
+    if (status_ok != db->insert(day, month, year, hours, minutes, seconds)) {
+        qDebug() << "*** ERROR: db->insert ***";
+        return err_disp;
+    }
+
+    return status_ok;
 }
 

@@ -3,7 +3,8 @@
 
 enum status{
     status_ok = 0,
-    status_nok
+    err_db,
+    err_disp
 };
 
 #endif // ERRCODES_H

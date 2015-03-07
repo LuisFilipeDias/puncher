@@ -42,18 +42,19 @@ private:
     QAction *check_logs, *check_raw, *close;
 
 private slots:
-    void init();
+    status init();
+    status update_displays();
+
     void edit_callback();
     void ctrl_callback();
     void close_callback();
     void reset_callback();
     void timer_callback();
-    void update_displays();
     void check_raw_callback();
     void check_logs_callback();
 
 public slots:
-    void get_hours(int, int, int);
+    status get_hours(int, int, int);
 };
 
 

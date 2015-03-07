@@ -38,11 +38,13 @@ Data::~Data()
     delete ui;
 }
 
+/* CALLBACKS ******************************************************************************************/
+
 void Data::on_data_raw_clicked()
 {
-    Data_raw raw;
-    raw.setModal(true);
-    raw.exec();
+    Data_raw *raw = new Data_raw();
+    raw->setModal(true);
+    raw->exec();
 }
 
 void Data::on_data_cancel_clicked()
@@ -63,31 +65,16 @@ void Data::on_calendarWidget_selectionChanged()
     sel_year = selected_date->year();
 
     /* filling the date into the db and UI */
-    fill_date();
+    if (status_ok != fill_date())
+        qDebug() << "*** ERROR: fill_date ***";
 
     /* updating title accordingly to selected date */
     data_title->setText(selected_date->toString());
 }
 
-void Data::fill_date()
-{
-    qDebug() << ":: fill_date ::";
-
-    if (status_ok != db->query(sel_day, sel_month, sel_year,
-                               &sel_hours, &sel_minutes, &sel_seconds)) {
-        qDebug() << "*** ERROR: db->query ***";
-    } else {
-        data_input_hours->setValue(sel_hours);
-        data_input_minutes->setValue(sel_minutes);
-        data_input_seconds->setValue(sel_seconds);
-    }
-}
-
 void Data::on_data_update_clicked()
 {
     QMessageBox msgBox;
-    QSqlQuery qry;
-    int rows = 0;
 
     sel_hours = data_input_hours->value();
     sel_minutes = data_input_minutes->value();
@@ -104,4 +91,22 @@ void Data::on_data_update_clicked()
         else /* sending signal to update puncher object */
             emit(set_hours(sel_hours, sel_minutes, sel_seconds));
     }
+}
+
+/* AUX FUNCTIONS ******************************************************************************************/
+
+status Data::fill_date()
+{
+    qDebug() << ":: fill_date ::";
+
+    if (status_ok != db->query(sel_day, sel_month, sel_year,
+                               &sel_hours, &sel_minutes, &sel_seconds)) {
+        qDebug() << "*** ERROR: db->query ***";
+        return err_db;
+    } else {
+        data_input_hours->setValue(sel_hours);
+        data_input_minutes->setValue(sel_minutes);
+        data_input_seconds->setValue(sel_seconds);
+    }
+    return status_ok;
 }
