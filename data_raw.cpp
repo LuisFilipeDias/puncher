@@ -19,10 +19,6 @@ Data_raw::~Data_raw()
 void Data_raw::get_raw()
 {
     QSqlQueryModel* model = new QSqlQueryModel();
-    //QSqlQuery *qry;
-
-    //Puncher puncher;
-    //puncher.dump_all_info(qry);
 
     QSqlQuery qry;
 

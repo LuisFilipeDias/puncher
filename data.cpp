@@ -166,5 +166,10 @@ void Data::on_data_update_clicked()
             else
                 qDebug() << "Inserted new row!";
         }
+
+        /* sending signal to puncher object */
+        emit(set_hours(sel_hours,
+                       sel_minutes,
+                       sel_seconds));
     }
 }

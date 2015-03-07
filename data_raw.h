@@ -17,7 +17,6 @@ public:
 
 private slots:
     void get_raw();
-
     void on_data_raw_cancel_clicked();
 
 private:

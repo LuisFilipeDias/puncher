@@ -2,6 +2,7 @@
 #include "ui_puncher.h"
 #include "data.h"
 #include "data_raw.h"
+#include "edit_dialog.h"
 #include <QTimer>
 #include <string>
 #include <stdio.h>
@@ -19,33 +20,40 @@ Puncher::Puncher(QWidget *parent) :
 
     ui->setupUi(this);
 
+    /* initialization operations */
     init();
 
+    /* connect timer to signal timeout (1s) */
     connect(timer, SIGNAL(timeout()), this, SLOT(timer_callback()));
+
+    /* manually tying the buttons/options to the callbacks */
     connect(ctrl, SIGNAL(clicked()), this, SLOT(ctrl_callback()));
     connect(reset, SIGNAL(clicked()), this, SLOT(reset_callback()));
+    connect(edit, SIGNAL(clicked()), this, SLOT(edit_callback()));
     connect(check_logs, SIGNAL(triggered()), this, SLOT(check_logs_callback()));
     connect(check_raw, SIGNAL(triggered()), this, SLOT(check_raw_callback()));
     connect(close, SIGNAL(triggered()), this, SLOT(close_callback()));
+
 }
 
 void Puncher::init()
 {
+    /* resetting the time for the day */
     seconds = minutes = hours = 0;
 
+    /* getting the ui elements into variables */
     lcd = ui->lcdNumber;
     lcd_secs = ui->lcdNumber_secs;
     ctrl = ui->ctrlButton;
     reset = ui->resetButton;
+    edit = ui->editButton;
     check_logs = ui->actionCheck_Logs;
     check_raw = ui->actionCheck_Raw;
     close = ui->actionClose;
 
-    lcd->setSegmentStyle(QLCDNumber::Flat);
+    /* displaying 00:00:00 as startup value */
     lcd->display("00");
-    lcd_secs->setSegmentStyle(QLCDNumber::Flat);
     lcd_secs->display("00:00");
-    ctrl->setText("Start");
 }
 
 Puncher::~Puncher()
@@ -53,10 +61,14 @@ Puncher::~Puncher()
     delete ui;
 }
 
+/* CALLBACKS ******************************************************************************************/
+
 void Puncher::reset_callback()
 {
+    qDebug() << ":: reset_callback ::";
     QMessageBox msgBox;
 
+    /* only reset if empty */
     if ((seconds + minutes + hours) != 0) {
         msgBox.setText("Do you want to Reset?");
         msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
@@ -74,6 +86,9 @@ void Puncher::reset_callback()
 
 void Puncher::ctrl_callback()
 {
+    qDebug() << ":: ctrl_callback ::";
+
+    /* start or stop accordingly to current state */
     if (timer->isActive()) {
         timer->stop();
 
@@ -94,6 +109,7 @@ void Puncher::ctrl_callback()
 
 void Puncher::timer_callback()
 {
+    qDebug() << ":: timer_callback ::";
     seconds++;
     if (seconds == 60) {
         minutes++;
@@ -107,8 +123,54 @@ void Puncher::timer_callback()
     update_displays();
 }
 
+void Puncher::check_logs_callback()
+{
+    qDebug() << ":: check_logs_callback ::";
+
+    Data cal;
+    cal.setModal(true);
+    cal.exec();
+}
+
+void Puncher::check_raw_callback()
+{
+    qDebug() << ":: check_raw_callback ::";
+
+    Data_raw raw;
+    raw.setModal(true);
+    raw.exec();
+}
+
+void Puncher::edit_callback()
+{
+    qDebug() << ":: edit_callback ::";
+
+    /* if updating, first stop counter */
+    if (timer->isActive())
+        ctrl_callback();
+
+    edit_dialog *edit = new edit_dialog();
+
+    /* signal to get info from edit_dialog */
+    connect(edit, SIGNAL(set_hours(int,int,int)), this, SLOT(get_hours(int,int,int)));
+
+    /* pass the timing data along to the new object */
+    edit->receive_data(hours, minutes, seconds);
+    edit->setModal(true);
+    edit->exec();
+}
+
+void Puncher::close_callback()
+{
+    qDebug() << ":: close_callback ::";
+    exit(0);
+}
+
+/* AUXILIARY FUNCTIONS ******************************************************************************************/
+
 void Puncher::update_displays()
 {
+    qDebug() << ":: update_displays ::";
     char display_str[6];
     char aux[2];
 
@@ -148,6 +210,7 @@ void Puncher::update_displays()
 
 void Puncher::insert_into_db(int l_day, int l_month, int l_year, int l_hours, int l_minutes, int l_seconds)
 {
+    qDebug() << ":: insert_into_db ::";
     QSqlQuery qry;
     int rows = 0;
 
@@ -204,26 +267,17 @@ void Puncher::insert_into_db(int l_day, int l_month, int l_year, int l_hours, in
     }
 }
 
-void Puncher::check_logs_callback()
+void Puncher::get_hours(int l_hours, int l_minutes, int l_seconds)
 {
-    qDebug() << "check_logs_callback";
+    qDebug() << ":: get_hours ::";
+    qDebug() << hours;
+    qDebug() << minutes;
+    qDebug() << seconds;
 
-    Data cal;
-    cal.setModal(true);
-    cal.exec();
+    hours = l_hours;
+    minutes = l_minutes;
+    seconds = l_seconds;
+
+    update_displays();
 }
 
-void Puncher::check_raw_callback()
-{
-    qDebug() << "check_raw_callback";
-
-    Data_raw raw;
-    raw.setModal(true);
-    raw.exec();
-}
-
-void Puncher::close_callback()
-{
-    qDebug() << "close_callback";
-    exit(0);
-}

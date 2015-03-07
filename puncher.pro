@@ -17,12 +17,15 @@ TEMPLATE = app
 SOURCES += main.cpp\
         puncher.cpp \
     data_raw.cpp \
-    data.cpp
+    data.cpp \
+    edit_dialog.cpp
 
 HEADERS  += puncher.h \
     data_raw.h \
-    data.h
+    data.h \
+    edit_dialog.h
 
 FORMS    += puncher.ui \
     data.ui \
-    data_raw.ui
+    data_raw.ui \
+    edit_dialog.ui

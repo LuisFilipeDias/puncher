@@ -37,6 +37,10 @@ private:
     int sel_day, sel_month, sel_year, sel_hours, sel_minutes, sel_seconds;
     QLabel *data_title, *data_hours, *data_minutes, *data_seconds;
     QSpinBox *data_input_hours, *data_input_minutes, *data_input_seconds;
+
+signals:
+    void set_hours(int, int, int);
+
 };
 
 #endif // DATA_H
