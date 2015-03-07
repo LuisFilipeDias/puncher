@@ -1,25 +1,21 @@
 #include "puncher.h"
+#include "database.h"
+
 #include <QApplication>
 #include <QSqlDatabase>
 #include <QtSql>
 #include <QtDebug>
 
+extern database *db;
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
-    QSqlDatabase db = QSqlDatabase::addDatabase( "QSQLITE" );
+    database *db = new database();
 
-    db.setDatabaseName( "./puncher_new.db" );
-
-    if( !db.open() )
-    {
-      qDebug() << db.lastError();
-      qFatal( "Failed to connect." );
-    }
-
-    qDebug( "Connected!" );
+    if (status_ok != db->init())
+        qDebug() << "*** ERROR: db->init ***";
 
     Puncher w;
     w.show();

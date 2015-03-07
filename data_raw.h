@@ -2,6 +2,11 @@
 #define DATA_RAW_H
 
 #include <QDialog>
+#include <QSqlQueryModel>
+
+#include "puncher.h"
+#include "database.h"
+#include "ui_data_raw.h"
 
 namespace Ui {
 class Data_raw;
@@ -20,6 +25,7 @@ private slots:
     void on_data_raw_cancel_clicked();
 
 private:
+    database *db;
     Ui::Data_raw *ui;
 };
 

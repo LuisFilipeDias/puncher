@@ -1,16 +1,4 @@
 #include "puncher.h"
-#include "ui_puncher.h"
-#include "data.h"
-#include "data_raw.h"
-#include "edit_dialog.h"
-#include <QTimer>
-#include <string>
-#include <stdio.h>
-#include <stdlib.h>
-#include <QMessageBox>
-#include <QDate>
-
-QSqlQuery qry_p;
 
 Puncher::Puncher(QWidget *parent) :
     QMainWindow(parent),
@@ -33,7 +21,6 @@ Puncher::Puncher(QWidget *parent) :
     connect(check_logs, SIGNAL(triggered()), this, SLOT(check_logs_callback()));
     connect(check_raw, SIGNAL(triggered()), this, SLOT(check_raw_callback()));
     connect(close, SIGNAL(triggered()), this, SLOT(close_callback()));
-
 }
 
 void Puncher::init()
@@ -54,6 +41,20 @@ void Puncher::init()
     /* displaying 00:00:00 as startup value */
     lcd->display("00");
     lcd_secs->display("00:00");
+
+    /* get current date and fill db info if any */
+    QDate *date = new QDate();
+    *date = date->currentDate();
+
+    day = date->day();
+    month = date->month();
+    year = date->year();
+
+    if (status_ok != db->query(day, month, year, &hours, &minutes, &seconds))
+        qDebug() << "*** ERROR: db->query ***";
+    else
+        update_displays();
+
 }
 
 Puncher::~Puncher()
@@ -99,7 +100,9 @@ void Puncher::ctrl_callback()
         month = date->month();
         year = date->year();
 
-        insert_into_db(day, month, year, hours, minutes, seconds);
+        if (status_ok != db->insert(day, month, year, hours, minutes, seconds))
+            qDebug() << "*** ERROR: db->insert ***";
+
         ctrl->setText("Start");
     } else {
         timer->start(1000);
@@ -127,18 +130,22 @@ void Puncher::check_logs_callback()
 {
     qDebug() << ":: check_logs_callback ::";
 
-    Data cal;
-    cal.setModal(true);
-    cal.exec();
+    Data *cal = new Data();
+
+    /* signal to get info from calendar */
+    connect(cal, SIGNAL(set_hours(int,int,int)), this, SLOT(get_hours(int,int,int)));
+
+    cal->setModal(true);
+    cal->exec();
 }
 
 void Puncher::check_raw_callback()
 {
     qDebug() << ":: check_raw_callback ::";
 
-    Data_raw raw;
-    raw.setModal(true);
-    raw.exec();
+    Data_raw *raw = new Data_raw();
+    raw->setModal(true);
+    raw->exec();
 }
 
 void Puncher::edit_callback()
@@ -208,71 +215,9 @@ void Puncher::update_displays()
     lcd_secs->display(display_str);
 }
 
-void Puncher::insert_into_db(int l_day, int l_month, int l_year, int l_hours, int l_minutes, int l_seconds)
-{
-    qDebug() << ":: insert_into_db ::";
-    QSqlQuery qry;
-    int rows = 0;
-
-    qry.prepare( "CREATE TABLE IF NOT EXISTS puncher_db (id INTEGER UNIQUE PRIMARY KEY, day VARCHAR(30), month VARCHAR(30), year VARCHAR(30), hours VARCHAR(30), minutes VARCHAR(30), seconds VARCHAR(30))" );
-    if (!qry.exec())
-        qDebug() << qry.lastError();
-    else
-        qDebug() << "Table created!";
-
-    QString qry_str = "SELECT * FROM puncher_db WHERE day='" +
-            QString::number( l_day )     + "' AND month='" +
-            QString::number( l_month )   + "' AND year='" +
-            QString::number( l_year )    + "'";
-
-    qry.prepare(qry_str);
-
-    if (!qry.exec()) {
-        qDebug() << qry.lastError();
-    } else {
-        QSqlRecord rec = qry.record();
-
-        int cols = rec.count();
-        for( rows=0; qry.next(); rows++ );
-    }
-
-    if (rows) {
-        QString qry_str = "UPDATE puncher_db SET hours='" +
-                QString::number( l_hours )   + "', minutes='" +
-                QString::number( l_minutes ) + "', seconds='" +
-                QString::number( l_seconds ) + "' WHERE day='" +
-                QString::number( l_day )     + "' AND month='" +
-                QString::number( l_month )   + "' AND year='" +
-                QString::number( l_year )    + "'";
-
-        qry.prepare(qry_str);
-        if (!qry.exec())
-            qDebug() << qry.lastError();
-        else
-            qDebug() << "Updated row!";
-    } else {
-        qry_str = "INSERT INTO puncher_db (day, month, year, hours, minutes, seconds) VALUES (" +
-                QString::number( l_day )     + ", " +
-                QString::number( l_month )   + ", " +
-                QString::number( l_year )    + ", " +
-                QString::number( l_hours )   + ", " +
-                QString::number( l_minutes ) + ", " +
-                QString::number( l_seconds ) + ")";
-
-        qry.prepare(qry_str);
-        if (!qry.exec())
-            qDebug() << qry.lastError();
-        else
-            qDebug() << "Inserted new row!";
-    }
-}
-
 void Puncher::get_hours(int l_hours, int l_minutes, int l_seconds)
 {
     qDebug() << ":: get_hours ::";
-    qDebug() << hours;
-    qDebug() << minutes;
-    qDebug() << seconds;
 
     hours = l_hours;
     minutes = l_minutes;

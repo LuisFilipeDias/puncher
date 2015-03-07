@@ -18,12 +18,15 @@ SOURCES += main.cpp\
         puncher.cpp \
     data_raw.cpp \
     data.cpp \
-    edit_dialog.cpp
+    edit_dialog.cpp \
+    database.cpp
 
 HEADERS  += puncher.h \
     data_raw.h \
     data.h \
-    edit_dialog.h
+    edit_dialog.h \
+    database.h \
+    errcodes.h
 
 FORMS    += puncher.ui \
     data.ui \

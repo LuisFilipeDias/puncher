@@ -5,6 +5,9 @@
 #include <QLabel>
 #include <QSpinBox>
 
+#include "puncher.h"
+#include "ui_edit_dialog.h"
+
 namespace Ui {
 class edit_dialog;
 }
@@ -19,7 +22,6 @@ public:
 
 private slots:
     void on_edit_dialog_cancel_clicked();
-
     void on_edit_dialog_ok_clicked();
 
 public slots:
