@@ -6,10 +6,12 @@
 #include <string>
 #include <stdio.h>
 #include <stdlib.h>
+#include <QShortcut>
 #include <QLCDNumber>
 #include <QPushButton>
 #include <QMainWindow>
 #include <QMessageBox>
+#include <QKeySequence>
 
 #include "data.h"
 #include "data_raw.h"
@@ -40,11 +42,13 @@ private:
     QPushButton *ctrl, *reset, *extra, *edit;
     int seconds, minutes, hours, day, month, year;
     QAction *check_logs, *check_raw, *close;
+    QShortcut* shortcut;
 
 private slots:
     status init();
     status update_displays();
 
+    void hotkey();
     void edit_callback();
     void ctrl_callback();
     void close_callback();

@@ -1,4 +1,4 @@
-#include "puncher.h"
+#include "../inc/puncher.h"
 
 Puncher::Puncher(QWidget *parent) :
     QMainWindow(parent),
@@ -21,6 +21,31 @@ Puncher::Puncher(QWidget *parent) :
     connect(check_logs, SIGNAL(triggered()), this, SLOT(check_logs_callback()));
     connect(check_raw, SIGNAL(triggered()), this, SLOT(check_raw_callback()));
     connect(close, SIGNAL(triggered()), this, SLOT(close_callback()));
+
+    /* connecting return key to start stop */
+    QKeySequence key_return(Qt::Key_Return);
+    shortcut = new QShortcut(key_return, ui->ctrlButton);
+    QObject::connect(shortcut, SIGNAL(activated()),ui->ctrlButton, SLOT(click()));
+
+    /* connecting R key to reset */
+    QKeySequence key_reset(Qt::Key_R);
+    shortcut = new QShortcut(key_reset, ui->ctrlButton);
+    QObject::connect(shortcut, SIGNAL(activated()),ui->resetButton, SLOT(click()));
+
+    /* connecting E key to edit */
+    QKeySequence key_edit(Qt::Key_E);
+    shortcut = new QShortcut(key_edit, ui->editButton);
+    QObject::connect(shortcut, SIGNAL(activated()),ui->editButton, SLOT(click()));
+
+    /* connecting 1 key to log */
+    QKeySequence key_log(Qt::Key_1);
+    shortcut = new QShortcut(key_log, this);
+    QObject::connect(shortcut, SIGNAL(activated()),ui->actionCheck_Logs, SLOT(trigger()));
+
+    /* connecting 2 key to raw */
+    QKeySequence key_raw(Qt::Key_2);
+    shortcut = new QShortcut(key_raw, this);
+    QObject::connect(shortcut, SIGNAL(activated()),ui->actionCheck_Raw, SLOT(trigger()));
 }
 
 Puncher::~Puncher()
@@ -230,5 +255,10 @@ status Puncher::get_hours(int l_hours, int l_minutes, int l_seconds)
     }
 
     return status_ok;
+}
+
+void Puncher::hotkey()
+{
+
 }
 
