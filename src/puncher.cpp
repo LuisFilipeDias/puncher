@@ -49,6 +49,21 @@ Puncher::Puncher(QWidget *parent) :
     QKeySequence key_raw(Qt::Key_2);
     shortcut = new QShortcut(key_raw, this);
     QObject::connect(shortcut, SIGNAL(activated()),ui->actionCheck_Raw, SLOT(trigger()));
+
+    /* connecting Escape key to close */
+    QKeySequence key_escape(Qt::Key_Escape);
+    shortcut = new QShortcut(key_escape, this);
+    QObject::connect(shortcut, SIGNAL(activated()),ui->actionClose, SLOT(trigger()));
+
+    /* connecting 3 key to weekly stats  */
+    QKeySequence key_weekly_stats(Qt::Key_3);
+    shortcut = new QShortcut(key_weekly_stats, this);
+    QObject::connect(shortcut, SIGNAL(activated()),ui->actionWeekly, SLOT(trigger()));
+
+    /* connecting 4 key to monthly stats  */
+    QKeySequence key_monthly_stats(Qt::Key_4);
+    shortcut = new QShortcut(key_monthly_stats, this);
+    QObject::connect(shortcut, SIGNAL(activated()),ui->actionMonthly, SLOT(trigger()));
 }
 
 Puncher::~Puncher()

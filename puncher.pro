@@ -22,7 +22,7 @@ SOURCES += src/main.cpp\
     src/database.cpp \
     src/stats_weekly.cpp \
     src/stats_monthly.cpp \
-    qcustomplot/qcustomplot.cpp
+    libs/qcustomplot/qcustomplot.cpp
 
 HEADERS  += inc/puncher.h \
     inc/data_raw.h \
@@ -32,7 +32,7 @@ HEADERS  += inc/puncher.h \
     inc/errcodes.h \
     inc/stats_weekly.h \
     inc/stats_monthly.h \
-    qcustomplot/qcustomplot.h
+    libs/qcustomplot/qcustomplot.h
 
 FORMS    += ui/puncher.ui \
     ui/data.ui \
