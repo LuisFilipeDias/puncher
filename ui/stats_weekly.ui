@@ -71,6 +71,13 @@
        <widget class="QSpinBox" name="stats_weekly_week"/>
       </item>
       <item>
+       <widget class="QPushButton" name="stats_weekly_update">
+        <property name="text">
+         <string>Update</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <spacer name="horizontalSpacer_3">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>

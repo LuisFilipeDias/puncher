@@ -2,6 +2,7 @@
 #define STATS_WEEKLY_H
 
 #include <QDialog>
+#include "../libs/qcustomplot/qcustomplot.h"
 
 #include "ui_stats_weekly.h"
 #include "database.h"
@@ -25,20 +26,25 @@ public:
     ~Stats_Weekly();
 
 private slots:
-    void init_graph();
+    void update_graph();
     QVector<double> get_hours(sw_pos[]);
     int days_in_month(int);
     sw_pos fill_next_pos(sw_pos);
+    sw_pos fill_prev_pos(sw_pos);
     void week_changed_callback(int);
 
+    void on_stats_weekly_update_clicked();
+
 private:
+    int d_o_w;
     Ui::Stats_Weekly *ui;
-    QCustomPlot *graph;
     int work_hours[7];
     QSpinBox *stats_weekly_week;
     QLabel *stats_weekly_label;
+    QPushButton *stats_weekly_update;
     sw_pos pos[7];
     database *db;
-    int sel_week;
+    int the_week;
+    bool no_graph;
 };
 #endif // STATS_WEEKLY_H
