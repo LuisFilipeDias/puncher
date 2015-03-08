@@ -2773,7 +2773,7 @@
    </property>
    <widget class="QMenu" name="menuFile">
     <property name="title">
-     <string>File</string>
+     <string>Data</string>
     </property>
     <addaction name="actionCheck_Logs"/>
     <addaction name="actionCheck_Raw"/>
@@ -2781,12 +2781,20 @@
    </widget>
    <widget class="QMenu" name="menuNotes">
     <property name="title">
+     <string>Statistics</string>
+    </property>
+    <addaction name="actionWeekly"/>
+    <addaction name="actionMonthly"/>
+   </widget>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
      <string>Help</string>
     </property>
-    <addaction name="actionNotes"/>
+    <addaction name="actionAbout"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuNotes"/>
+   <addaction name="menuHelp"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <property name="palette">
@@ -3630,22 +3638,32 @@
   </widget>
   <action name="actionCheck_Logs">
    <property name="text">
-    <string>Check Logs</string>
+    <string>Calendar</string>
    </property>
   </action>
-  <action name="actionNotes">
+  <action name="actionWeekly">
    <property name="text">
-    <string>Notes</string>
+    <string>Weekly</string>
    </property>
   </action>
   <action name="actionCheck_Raw">
    <property name="text">
-    <string>Check Raw</string>
+    <string>Raw Data</string>
    </property>
   </action>
   <action name="actionClose">
    <property name="text">
     <string>Exit</string>
+   </property>
+  </action>
+  <action name="actionMonthly">
+   <property name="text">
+    <string>Monthly</string>
+   </property>
+  </action>
+  <action name="actionAbout">
+   <property name="text">
+    <string>About</string>
    </property>
   </action>
  </widget>

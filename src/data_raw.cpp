@@ -1,9 +1,11 @@
-#include "data_raw.h"
+#include "../inc/data_raw.h"
 
 Data_raw::Data_raw(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::Data_raw)
 {   
+    setWindowTitle("Raw Data");
+
     ui->setupUi(this);
     get_raw();
 }

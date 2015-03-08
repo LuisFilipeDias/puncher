@@ -1,10 +1,12 @@
-#include "data.h"
+#include "../inc/data.h"
 
 Data::Data(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::Data)
 {
     ui->setupUi(this);
+
+    setWindowTitle("Calendar");
 
     /* getting the ui elements into variables */
     calendar = ui->calendarWidget;

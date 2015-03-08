@@ -19,6 +19,8 @@
 #include "errcodes.h"
 #include "ui_puncher.h"
 #include "edit_dialog.h"
+#include "stats_weekly.h"
+#include "stats_monthly.h"
 
 namespace Ui {
 class Puncher;
@@ -34,21 +36,21 @@ public:
 
 private:
     database *db;
+    bool over_hours;
     QTimer * timer;
     QLCDNumber *lcd;
     QSqlQuery qry_p;
     Ui::Puncher *ui;
     QLCDNumber *lcd_secs;
+    QAction *check_logs, *check_raw, *close, *stats_weekly, *stats_monthly;
     QPushButton *ctrl, *reset, *extra, *edit;
     int seconds, minutes, hours, day, month, year;
-    QAction *check_logs, *check_raw, *close;
     QShortcut* shortcut;
 
 private slots:
     status init();
     status update_displays();
 
-    void hotkey();
     void edit_callback();
     void ctrl_callback();
     void close_callback();
@@ -56,6 +58,8 @@ private slots:
     void timer_callback();
     void check_raw_callback();
     void check_logs_callback();
+    void stats_weekly_callback();
+    void stats_monthly_callback();
 
 public slots:
     status get_hours(int, int, int);

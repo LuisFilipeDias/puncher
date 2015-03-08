@@ -1,5 +1,5 @@
-#include "puncher.h"
-#include "database.h"
+#include "../inc/puncher.h"
+#include "../inc/database.h"
 
 #include <QApplication>
 #include <QSqlDatabase>

@@ -4,6 +4,7 @@ Puncher::Puncher(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::Puncher)
 {
+    over_hours = false;
     timer = new QTimer(this);
 
     ui->setupUi(this);
@@ -21,6 +22,8 @@ Puncher::Puncher(QWidget *parent) :
     connect(check_logs, SIGNAL(triggered()), this, SLOT(check_logs_callback()));
     connect(check_raw, SIGNAL(triggered()), this, SLOT(check_raw_callback()));
     connect(close, SIGNAL(triggered()), this, SLOT(close_callback()));
+    connect(stats_weekly, SIGNAL(triggered()), this, SLOT(stats_weekly_callback()));
+    connect(stats_monthly, SIGNAL(triggered()), this, SLOT(stats_monthly_callback()));
 
     /* connecting return key to start stop */
     QKeySequence key_return(Qt::Key_Return);
@@ -65,6 +68,9 @@ status Puncher::init()
     reset = ui->resetButton;
     edit = ui->editButton;
     check_logs = ui->actionCheck_Logs;
+    check_raw = ui->actionCheck_Raw;
+    stats_weekly = ui->actionWeekly;
+    stats_monthly = ui->actionMonthly;
     check_raw = ui->actionCheck_Raw;
     close = ui->actionClose;
 
@@ -153,6 +159,13 @@ void Puncher::timer_callback()
         hours++;
         minutes = 0;
     }
+    if (hours >= 8 && !over_hours) {
+        QMessageBox msgBox;
+        msgBox.setText("You are working over-hours. Go Home!");
+        msgBox.setStandardButtons(QMessageBox::Ok);
+        msgBox.exec();
+        over_hours = true;
+    }
 
     update_displays();
 }
@@ -202,6 +215,24 @@ void Puncher::close_callback()
 {
     qDebug() << ":: close_callback ::";
     exit(0);
+}
+
+void Puncher::stats_weekly_callback()
+{
+    qDebug() << ":: stats_weekly_callback ::";
+
+    Stats_Weekly *stats_weekly = new Stats_Weekly();
+    stats_weekly->setModal(true);
+    stats_weekly->exec();
+}
+
+void Puncher::stats_monthly_callback()
+{
+    qDebug() << ":: stats_monthly_callback ::";
+
+    Stats_Monthly *stats_monthly = new Stats_Monthly();
+    stats_monthly->setModal(true);
+    stats_monthly->exec();
 }
 
 /* AUX FUNCTIONS ******************************************************************************************/
@@ -255,10 +286,5 @@ status Puncher::get_hours(int l_hours, int l_minutes, int l_seconds)
     }
 
     return status_ok;
-}
-
-void Puncher::hotkey()
-{
-
 }
 
