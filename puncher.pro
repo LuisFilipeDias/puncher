@@ -14,21 +14,21 @@ TEMPLATE = app
 
 #DEFINES += DB_debug
 
-SOURCES += main.cpp\
-        puncher.cpp \
-    data_raw.cpp \
-    data.cpp \
-    edit_dialog.cpp \
-    database.cpp
+SOURCES += src/main.cpp\
+        src/puncher.cpp \
+    src/data_raw.cpp \
+    src/data.cpp \
+    src/edit_dialog.cpp \
+    src/database.cpp
 
-HEADERS  += puncher.h \
-    data_raw.h \
-    data.h \
-    edit_dialog.h \
-    database.h \
-    errcodes.h
+HEADERS  += inc/puncher.h \
+    inc/data_raw.h \
+    inc/data.h \
+    inc/edit_dialog.h \
+    inc/database.h \
+    inc/errcodes.h
 
-FORMS    += puncher.ui \
-    data.ui \
-    data_raw.ui \
-    edit_dialog.ui
+FORMS    += ui/puncher.ui \
+    ui/data.ui \
+    ui/data_raw.ui \
+    ui/edit_dialog.ui

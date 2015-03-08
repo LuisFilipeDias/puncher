@@ -187,36 +187,24 @@ status Puncher::update_displays()
     char display_str[6];
     char aux[2];
 
-    if (hours < 10) {
-        strcpy(display_str, "0");
-        snprintf(aux, 2, "%d", hours);
-        strcat(display_str, aux);
-    } else {
-        snprintf(aux, 3, "%d", hours);
-        strcat(display_str, aux);
-    }
+    snprintf(aux, 2, "%d", hours/10);
+    strcpy(display_str, aux);
+    snprintf(aux, 2, "%d", hours%10);
+    strcat(display_str, aux);
 
     lcd->display(display_str);
 
-    if (minutes < 10) {
-        strcpy(display_str, "0");
-        snprintf(aux, 2, "%d", minutes);
-        strcat(display_str, aux);
-    } else {
-        snprintf(aux, 3, "%d", minutes);
-        strcat(display_str, aux);
-    }
+    snprintf(aux, 2, "%d", minutes/10);
+    strcpy(display_str, aux);
+    snprintf(aux, 2, "%d", minutes%10);
+    strcat(display_str, aux);
 
     strcat(display_str, ":");
 
-    if (seconds < 10) {
-        strcat(display_str, "0");
-        snprintf(aux, 2, "%d", seconds);
-        strcat(display_str, aux);
-    } else {
-        snprintf(aux, 3, "%d", seconds);
-        strcat(display_str, aux);
-    }
+    snprintf(aux, 2, "%d", seconds/10);
+    strcat(display_str, aux);
+    snprintf(aux, 2, "%d", seconds%10);
+    strcat(display_str, aux);
 
     lcd_secs->display(display_str);
 
