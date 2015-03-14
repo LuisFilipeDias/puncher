@@ -9,6 +9,7 @@ Stats_Monthly::Stats_Monthly(QWidget *parent) :
 
     ui->setupUi(this);
     stats_monthly_month = ui->stats_monthly_month;
+    stats_monthly_year = ui->stats_monthly_year;
     stats_monthly_label_from = ui->stats_monthly_label;
     stats_monthly_label_to = ui->stats_monthly_label_2;
     stats_monthly_monthly_statistics = ui->stats_monthly_monthly_statistics;
@@ -18,7 +19,10 @@ Stats_Monthly::Stats_Monthly(QWidget *parent) :
 
     stats_monthly_monthly_statistics->setAlignment(Qt::AlignCenter | Qt::AlignHCenter);
 
-    connect(stats_monthly_month, SIGNAL(valueChanged(int)), this, SLOT(month_changed_callback(int)));
+    stats_monthly_year->setRange(1970,2120);
+
+    connect(ui->stats_monthly_month, SIGNAL(valueChanged(int)), this, SLOT(month_changed_callback(int)));
+    connect(ui->stats_monthly_year, SIGNAL(valueChanged(int)), this, SLOT(year_changed_callback(int)));
 
     no_graph = true;
 
@@ -26,9 +30,11 @@ Stats_Monthly::Stats_Monthly(QWidget *parent) :
     QDate *date = new QDate();
     *date = date->currentDate();
     the_month = date->month();
+    the_year = date->year();
     stats_monthly_month->setValue(the_month);
+    stats_monthly_year->setValue(the_year);
 
-    update_graph();
+    //update_graph();
 
 }
 
@@ -39,13 +45,13 @@ Stats_Monthly::~Stats_Monthly()
 
 void Stats_Monthly::update_graph()
 {
-    int month_days = days_in_month(the_month);
+    int month_days = days_in_month(the_month, the_year);
     QVector<double> x(month_days), y(month_days), y_av(month_days);
     QPen pen;
 
     // calculates the days for the selected month */
-    for (int i = 1; i < the_month; i++) {
-        pos[i].day = i;
+    for (int i = 0; i < month_days; i++) {
+        pos[i].day = i + 1;
         pos[i].month = the_month;
         pos[i].year = the_year;
     }
@@ -62,29 +68,32 @@ void Stats_Monthly::update_graph()
     }
 
     stats_monthly_total_hours->setText(QString::number(total_hours));
-    stats_monthly_average_hours->setText(QString::number(total_hours / working_days));
+    if (working_days != 0)
+        stats_monthly_average_hours->setText(QString::number(total_hours / working_days));
+    else
+        stats_monthly_average_hours->setText(QString::number(0));
     stats_monthly_working_days->setText(QString::number(working_days));
 
     for (int i = 0; i < month_days; i++){
-        y_av[i] = total_hours / working_days;
+        if (working_days != 0)
+            y_av[i] = total_hours / working_days;
+        else
+            y_av[i] = 0;
         x[i] = i+1;
     }
 
-
-
-
     QString label = "From: " +
-            QString::number( pos[0].day )     + " - "   +
-            QString::number( pos[0].month )   + " - "  +
-            QString::number( pos[0].year );
+            QString::number(pos[0].day)     + " "   +
+            month_to_string(pos[0].month)   + " "  +
+            QString::number(pos[0].year);
 
     stats_monthly_label_from->setText(label);
     stats_monthly_label_from->setAlignment(Qt::AlignHCenter | Qt::AlignCenter);
 
     label = "To: " +
-            QString::number( pos[month_days - 1].day )     + " - "   +
-            QString::number( pos[month_days - 1].month )   + " - "  +
-            QString::number( pos[month_days - 1].year );
+            QString::number(pos[month_days - 1].day)     + " "   +
+            month_to_string(pos[month_days - 1].month)   + " "  +
+            QString::number(pos[month_days - 1].year);
 
     stats_monthly_label_to->setText(label);
     stats_monthly_label_to->setAlignment(Qt::AlignHCenter | Qt::AlignCenter);
@@ -116,18 +125,38 @@ void Stats_Monthly::update_graph()
     // give the axes some labels:
     graph->yAxis->setLabel("Work Hours");
     // set axes ranges, so we see all data:
-    graph->xAxis->setRange(0, 8);
+    graph->xAxis->setRange(0, month_days + 1);
     graph->yAxis->setRange(0, 12);
     graph->replot();
 
     /* fill x axis values correctly */
     QVector<double> xTicks, yTicks;
     QVector<QString> xLabels;
-    xTicks << 0 << 1 << 2 << 3 << 4 << 5 << 6 << 7 << 8;
-    /*xLabels << "" << QString::number(pos[0].day) << QString::number(pos[1].day) << QString::number(pos[2].day)
-             << QString::number(pos[3].day) << QString::number(pos[4].day) << QString::number(pos[5].day)  << QString::number(pos[6].day);
-    */
-    xLabels << "" << "Mon" << "Tue" << "Wed" << "Thu" << "Fri" << "Sat" << "Sun";
+    xTicks << 1 << 2 << 3 << 4 << 5 << 6 << 7 << 8 << 9
+           << 10 << 11 << 12 << 13 << 14 << 15 << 16 << 17 << 18 << 19
+           << 20 << 21 << 22 << 23 << 24 << 25 << 26 << 27 << 28;
+
+    xLabels << "1" << "2" << "3" << "4" << "5" << "6" << "7" << "8" << "9"
+            << "10" << "11" << "12" << "13" << "14" << "15" << "16" << "17" << "18" << "19"
+            << "20" << "21" << "22" << "23" << "24" << "25" << "26" << "27";
+
+    switch (month_days){
+    case 28:
+        break;
+    case 29:
+        xTicks << 29;
+        xLabels << "29";
+        break;
+    case 30:
+        xTicks << 29 << 30;
+        xLabels << "29" << "30";
+        break;
+    case 31:
+        xTicks << 29 << 30 << 31;
+        xLabels << "29" << "30" << "31";
+        break;
+    }
+
     graph->xAxis->setAutoTicks(false);
     graph->xAxis->setAutoTickLabels(false);
     graph->xAxis->setTickVector(xTicks);
@@ -140,7 +169,7 @@ void Stats_Monthly::update_graph()
     /* Plot Title */
     if (no_graph) {
         graph->plotLayout()->insertRow(0);
-        QString graph_title = "monthly Hours Statistics";
+        QString graph_title = "Monthly Hours Statistics";
         graph->plotLayout()->addElement(0, 0, new QCPPlotTitle(graph, graph_title));
         no_graph = false;
     }
@@ -167,7 +196,27 @@ void Stats_Monthly::month_changed_callback(int val)
 {
     qDebug() << ":: month_changed_callback ::";
 
-    the_month = val;
-    the_year = 2015;
+    if (val == 0) {
+        the_month = 12;
+        the_year--;
+    } else if (val == 13) {
+        the_month = 1;
+        the_year++;
+    } else {
+        the_month = val;
+    }
+
+    stats_monthly_month->setValue(the_month);
+    stats_monthly_year->setValue(the_year);
+    update_graph();
+}
+
+void Stats_Monthly::year_changed_callback(int val)
+{
+    qDebug() << ":: year_changed_callback ::";
+
+    the_year = val;
+
+    update_graph();
 }
 

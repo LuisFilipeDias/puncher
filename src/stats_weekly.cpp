@@ -49,11 +49,11 @@ void Stats_Weekly::update_graph()
     pos[0].day = pos[d_o_w].day - d_o_w;
     if (pos[0].day < 1) {
         if (pos[d_o_w].month != 1) {
-            pos[0].day = days_in_month(pos[d_o_w].month - 1) + (pos[0].day);
+            pos[0].day = days_in_month(pos[d_o_w].month - 1, pos[d_o_w].year) + (pos[0].day);
             pos[0].month = pos[d_o_w].month - 1;
             pos[0].year = pos[d_o_w].year;
         } else {
-            pos[0].day = days_in_month(12) + (pos[0].day);
+            pos[0].day = days_in_month(12, pos[d_o_w].year - 1) + (pos[0].day);
             pos[0].month = 12;
             pos[0].year = pos[d_o_w].year - 1;
         }
@@ -89,17 +89,17 @@ void Stats_Weekly::update_graph()
     }
 
     QString label = "From: " +
-            QString::number( pos[0].day )     + " - "   +
-            QString::number( pos[0].month )   + " - "  +
-            QString::number( pos[0].year );
+            QString::number(pos[0].day)     + " - "   +
+            month_to_string(pos[0].month)   + " "  +
+            QString::number(pos[0].year);
 
     stats_weekly_label_from->setText(label);
     stats_weekly_label_from->setAlignment(Qt::AlignHCenter | Qt::AlignCenter);
 
     label = "To: " +
-            QString::number( pos[week_days - 1].day )     + " - "   +
-            QString::number( pos[week_days - 1].month )   + " - "  +
-            QString::number( pos[week_days - 1].year );
+            QString::number(pos[week_days - 1].day)     + " - "   +
+            month_to_string(pos[week_days - 1].month)   + " "  +
+            QString::number(pos[week_days - 1].year);
 
     stats_weekly_label_to->setText(label);
     stats_weekly_label_to->setAlignment(Qt::AlignHCenter | Qt::AlignCenter);
@@ -183,7 +183,7 @@ sw_pos Stats_Weekly::fill_next_pos(sw_pos prev)
     sw_pos curr;
 
     curr.day = prev.day;
-    if (prev.day == days_in_month(prev.month)) {
+    if (prev.day == days_in_month(prev.month, prev.year)) {
         curr.day = 1;
         curr.month = prev.month + 1;
         if (curr.month > 12) {
@@ -206,11 +206,11 @@ sw_pos Stats_Weekly::fill_prev_pos(sw_pos next)
 
     curr.day = next.day;
     if (next.day == 1) {
-        curr.day = days_in_month(next.month - 1);
+        curr.day = days_in_month(next.month - 1, next.year);
         curr.month = next.month - 1;
         curr.year = next.year;
         if (curr.month == 0) {
-            curr.day = days_in_month(12);
+            curr.day = days_in_month(12, next.year-1);
             curr.month = 12;
             curr.year = next.year - 1;
         }

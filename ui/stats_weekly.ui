@@ -230,25 +230,38 @@
     </item>
    </layout>
   </widget>
-  <widget class="QLabel" name="stats_weekly_weekly_statistics">
+  <widget class="QWidget" name="">
    <property name="geometry">
     <rect>
-     <x>220</x>
+     <x>10</x>
      <y>600</y>
-     <width>132</width>
-     <height>36</height>
+     <width>571</width>
+     <height>30</height>
     </rect>
    </property>
-   <property name="font">
-    <font>
-     <pointsize>12</pointsize>
-     <weight>75</weight>
-     <bold>true</bold>
-    </font>
-   </property>
-   <property name="text">
-    <string>Weekly Statistics</string>
-   </property>
+   <layout class="QVBoxLayout" name="verticalLayout_2">
+    <item>
+     <widget class="Line" name="line_2">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLabel" name="stats_weekly_weekly_statistics">
+      <property name="font">
+       <font>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Weekly Statistics</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
   </widget>
  </widget>
  <customwidgets>

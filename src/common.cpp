@@ -1,11 +1,17 @@
 #include "common.h"
+#include <QDate>
+
+QString month_string[] = {"January", "February", "March", "April",
+                        "May", "June", "July", "August",
+                        "September", "October", "November", "December"};
 
 common::common()
 {
 }
 
-int days_in_month(int month)
+int days_in_month(int month, int year)
 {
+    QDate *date;
     switch (month) {
     case 1:
     case 3:
@@ -17,7 +23,10 @@ int days_in_month(int month)
         return 31;
         break;
     case 2:
-        return 28; // or 29 calculate
+        if (!date->isLeapYear(year))
+            return 28;
+        else
+            return 29;
     case 4:
     case 6:
     case 9:
@@ -26,4 +35,10 @@ int days_in_month(int month)
         break;
     }
     return -1;
+}
+
+QString month_to_string(int month)
+{
+    /* index - 1 for it starts at 0 */
+    return month_string[month - 1];
 }

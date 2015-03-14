@@ -24,12 +24,12 @@ private slots:
     void update_graph();
     QVector<double> get_hours(int, sw_pos[]);
     void month_changed_callback(int);
-
+    void year_changed_callback(int);
 
 private:
     Ui::Stats_Monthly *ui;
     int work_hours[31];
-    QSpinBox *stats_monthly_month;
+    QSpinBox *stats_monthly_month, *stats_monthly_year;
     QLabel *stats_monthly_label_from, *stats_monthly_label_to, *stats_monthly_monthly_statistics;
     QPushButton *stats_monthly_update;
     QLineEdit *stats_monthly_average_hours, *stats_monthly_working_days, *stats_monthly_total_hours;
