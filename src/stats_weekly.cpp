@@ -8,7 +8,14 @@ Stats_Weekly::Stats_Weekly(QWidget *parent) :
 
     ui->setupUi(this);
     stats_weekly_week = ui->stats_weekly_week;
-    stats_weekly_label = ui->stats_weekly_label;
+    stats_weekly_label_from = ui->stats_weekly_label;
+    stats_weekly_label_to = ui->stats_weekly_label_2;
+    stats_weekly_weekly_statistics = ui->stats_weekly_weekly_statistics;
+    stats_weekly_total_hours = ui->stats_weekly_total_hours;
+    stats_weekly_average_hours = ui->stats_weekly_average_hours;
+    stats_weekly_working_days = ui->stats_weekly_working_days;
+
+    stats_weekly_weekly_statistics->setAlignment(Qt::AlignCenter | Qt::AlignHCenter);
 
     connect(stats_weekly_week, SIGNAL(valueChanged(int)), this, SLOT(week_changed_callback(int)));
 
@@ -34,7 +41,8 @@ Stats_Weekly::~Stats_Weekly()
 
 void Stats_Weekly::update_graph()
 {
-    QVector<double> x(7), y(7), y_av(7);
+    int week_days = 7;
+    QVector<double> x(week_days), y(week_days), y_av(week_days);
     QPen pen;
 
     /* finds position 0, according to selected date */
@@ -59,35 +67,44 @@ void Stats_Weekly::update_graph()
         pos[i] = fill_next_pos(pos[i-1]);
 
     /* returns the y axis, based on the week days */
-    y = get_hours(pos);
+    y = get_hours(week_days, pos);
 
-    int avg = 0;
-    for (int i = 0; i < 7; i++)
-        avg = avg + y[i];
+    int total_hours = 0, working_days = 0;
 
-    avg = avg/7;
+    for (int i = 0; i < week_days; i++) {
+        if(y[i] > 0) {
+            working_days ++;
+            total_hours += y[i];
+        }
+    }
 
-    /* temprary, replace with real average */
-    for (int i = 0; i < 7; i++)
-        y_av[i] = avg;
+    stats_weekly_total_hours->setText(QString::number(total_hours));
+    stats_weekly_average_hours->setText(QString::number(total_hours / working_days));
+    stats_weekly_working_days->setText(QString::number(working_days));
 
     /* x is 0 - 7 (monday to sunday 0 is discarded) */
-    for (int i = 0; i < 7; i++)
+    for (int i = 0; i < week_days; i++){
+        y_av[i] = total_hours / working_days;
         x[i] = i+1;
+    }
 
     QString label = "From: " +
             QString::number( pos[0].day )     + " - "   +
             QString::number( pos[0].month )   + " - "  +
-            QString::number( pos[0].year )    + " \nTo: " +
-            QString::number( pos[6].day )     + " - "   +
-            QString::number( pos[6].month )   + " - "  +
-            QString::number( pos[6].year );
+            QString::number( pos[0].year );
 
-    stats_weekly_label->setText(label);
-    stats_weekly_label->setAlignment(Qt::AlignHCenter | Qt::AlignCenter);
+    stats_weekly_label_from->setText(label);
+    stats_weekly_label_from->setAlignment(Qt::AlignHCenter | Qt::AlignCenter);
+
+    label = "To: " +
+            QString::number( pos[week_days - 1].day )     + " - "   +
+            QString::number( pos[week_days - 1].month )   + " - "  +
+            QString::number( pos[week_days - 1].year );
+
+    stats_weekly_label_to->setText(label);
+    stats_weekly_label_to->setAlignment(Qt::AlignHCenter | Qt::AlignCenter);
 
     // create graph and assign data to it:
-
     QCustomPlot *graph = ui->widget;
     graph->clearGraphs();
     graph->clearItems();
@@ -112,7 +129,6 @@ void Stats_Weekly::update_graph()
     graph->graph(1)->setName("Average");
 
     // give the axes some labels:
-    graph->xAxis->setLabel("Day");
     graph->yAxis->setLabel("Work Hours");
     // set axes ranges, so we see all data:
     graph->xAxis->setRange(0, 8);
@@ -120,15 +136,21 @@ void Stats_Weekly::update_graph()
     graph->replot();
 
     /* fill x axis values correctly */
-    QVector<double> xTicks;
+    QVector<double> xTicks, yTicks;
     QVector<QString> xLabels;
-    xTicks << 0 << 1 << 2 << 3 << 4 << 5 << 6 << 7;
-    xLabels << "" << QString::number(pos[0].day) << QString::number(pos[1].day) << QString::number(pos[2].day)
+    xTicks << 0 << 1 << 2 << 3 << 4 << 5 << 6 << 7 << 8;
+    /*xLabels << "" << QString::number(pos[0].day) << QString::number(pos[1].day) << QString::number(pos[2].day)
              << QString::number(pos[3].day) << QString::number(pos[4].day) << QString::number(pos[5].day)  << QString::number(pos[6].day);
+    */
+    xLabels << "" << "Mon" << "Tue" << "Wed" << "Thu" << "Fri" << "Sat" << "Sun";
     graph->xAxis->setAutoTicks(false);
     graph->xAxis->setAutoTickLabels(false);
     graph->xAxis->setTickVector(xTicks);
     graph->xAxis->setTickVectorLabels(xLabels);
+
+    yTicks << 0 << 1 << 2 << 3 << 4 << 5 << 6 << 7 << 8 << 9 << 10 << 11 << 12;
+    graph->yAxis->setAutoTicks(false);
+    graph->yAxis->setTickVector(yTicks);
 
     /* Plot Title */
     if (no_graph) {
@@ -140,11 +162,11 @@ void Stats_Weekly::update_graph()
 
 }
 
-QVector<double> Stats_Weekly::get_hours(sw_pos sel_pos[7])
+QVector<double> Stats_Weekly::get_hours(int days, sw_pos sel_pos[])
 {
     int sel_hours, sel_minutes, sel_seconds;
-    QVector<double> y(7);
-    for (int i = 0; i < 7; i++) {
+    QVector<double> y(days);
+    for (int i = 0; i < days; i++) {
         if (status_ok != db->query(sel_pos[i].day, sel_pos[i].month, sel_pos[i].year,
                                    &sel_hours, &sel_minutes, &sel_seconds)) {
             qDebug() << "*** ERROR: db->query ***";
@@ -154,30 +176,6 @@ QVector<double> Stats_Weekly::get_hours(sw_pos sel_pos[7])
         }
     }
     return y;
-}
-
-int Stats_Weekly::days_in_month(int month)
-{
-    switch (month) {
-    case 1:
-    case 3:
-    case 5:
-    case 7:
-    case 8:
-    case 10:
-    case 12:
-        return 31;
-        break;
-    case 2:
-        return 28; // or 29 calculate
-    case 4:
-    case 6:
-    case 9:
-    case 11:
-        return 30;
-        break;
-    }
-    return -1;
 }
 
 sw_pos Stats_Weekly::fill_next_pos(sw_pos prev)
@@ -224,16 +222,10 @@ sw_pos Stats_Weekly::fill_prev_pos(sw_pos next)
     return curr;
 }
 
-void Stats_Weekly::week_changed_callback(int)
+void Stats_Weekly::week_changed_callback(int val)
 {
     qDebug() << ":: week_changed_callback ::";
-}
 
-void Stats_Weekly::on_stats_weekly_update_clicked()
-{
-    qDebug() << ":: on_stats_weekly_update_clicked ::";
-
-    int val = stats_weekly_week->value();
     /* use d_o_w because it's the reference */
     /* if val is bigger, go forward 7 houses */
     if (val > the_week)
@@ -249,5 +241,4 @@ void Stats_Weekly::on_stats_weekly_update_clicked()
         the_week = val;
         update_graph();
     }
-
 }
