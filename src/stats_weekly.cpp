@@ -4,9 +4,10 @@ Stats_Weekly::Stats_Weekly(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::Stats_Weekly)
 {
+    ui->setupUi(this);
+
     setWindowTitle("Weekly Statistics");
 
-    ui->setupUi(this);
     stats_weekly_week = ui->stats_weekly_week;
     stats_weekly_label_from = ui->stats_weekly_label;
     stats_weekly_label_to = ui->stats_weekly_label_2;
@@ -69,24 +70,37 @@ void Stats_Weekly::update_graph()
     /* returns the y axis, based on the week days */
     y = get_hours(week_days, pos);
 
-    int total_hours = 0, working_days = 0;
+    double total_hours = 0;
+    int working_days = 0;
 
     for (int i = 0; i < week_days; i++) {
         if(y[i] > 0) {
             working_days ++;
             total_hours += y[i];
         }
+        /* setting decimal cases to 2 */
+        decimal_cases(&y[i], 2);
     }
-
-    stats_weekly_total_hours->setText(QString::number(total_hours));
-    stats_weekly_average_hours->setText(QString::number(total_hours / working_days));
-    stats_weekly_working_days->setText(QString::number(working_days));
 
     /* x is 0 - 7 (monday to sunday 0 is discarded) */
     for (int i = 0; i < week_days; i++){
-        y_av[i] = total_hours / working_days;
+        if (working_days != 0)
+            y_av[i] = total_hours / working_days;
+        else
+            y_av[i] = 0;
+
+        /* setting decimal cases to 2 */
+        decimal_cases(&y_av[i], 2);
         x[i] = i+1;
     }
+
+    total_hours = (round(total_hours * 100))/100;
+    stats_weekly_total_hours->setText(QString::number(total_hours));
+    if (working_days != 0)
+        stats_weekly_average_hours->setText(QString::number(y_av[0]));
+    else
+        stats_weekly_average_hours->setText(QString::number(0));
+    stats_weekly_working_days->setText(QString::number(working_days));
 
     QString label = "From: " +
             QString::number(pos[0].day)     + " - "   +
@@ -112,24 +126,24 @@ void Stats_Weekly::update_graph()
     graph->addGraph();
     graph->legend->setVisible(true);
     graph->graph(0)->setData(x, y);
-    pen.setColor(QColor(30, 40, 255, 150));
-    graph->graph(0)->setLineStyle(QCPGraph::lsLine);
-    graph->graph(0)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssDisc, 5));
-    pen.setWidthF(2);
+    pen.setColor(QColor(0, 255, 0, 150));
+    graph->graph(0)->setLineStyle(QCPGraph::lsNone);
+    graph->graph(0)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssCrossSquare, 5));
+    pen.setWidthF(5);
     graph->graph(0)->setPen(pen);
-    graph->graph(0)->setName("Working Hours");
+    graph->graph(0)->setName("Daily Hours");
 
     /* average hours graph */
     graph->addGraph();
     graph->graph(1)->setData(x, y_av);
-    pen.setColor(QColor(255, 40, 0, 150));
+    pen.setColor(QColor(0, 153, 51, 150));
     pen.setStyle(Qt::DotLine);
     pen.setWidthF(2);
     graph->graph(1)->setPen(pen);
     graph->graph(1)->setName("Average");
 
     // give the axes some labels:
-    graph->yAxis->setLabel("Work Hours");
+    graph->yAxis->setLabel("Daily Hours");
     // set axes ranges, so we see all data:
     graph->xAxis->setRange(0, 8);
     graph->yAxis->setRange(0, 12);
@@ -172,7 +186,7 @@ QVector<double> Stats_Weekly::get_hours(int days, sw_pos sel_pos[])
             qDebug() << "*** ERROR: db->query ***";
             y[i] = 0;
         } else {
-            y[i] = sel_hours + sel_minutes / 60 + sel_seconds / 3600;
+            y[i] = sel_hours + ((double) sel_minutes) / 60 + ((double) sel_seconds) / 3600;
         }
     }
     return y;

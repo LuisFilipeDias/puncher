@@ -4,9 +4,10 @@ Data_raw::Data_raw(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::Data_raw)
 {   
+    ui->setupUi(this);
+
     setWindowTitle("Raw Data");
 
-    ui->setupUi(this);
     get_raw();
 }
 

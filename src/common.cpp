@@ -1,5 +1,7 @@
-#include "common.h"
 #include <QDate>
+#include <cmath>
+
+#include "common.h"
 
 QString month_string[] = {"January", "February", "March", "April",
                         "May", "June", "July", "August",
@@ -41,4 +43,11 @@ QString month_to_string(int month)
 {
     /* index - 1 for it starts at 0 */
     return month_string[month - 1];
+}
+
+/* converts double to a 2 decimal case value */
+void decimal_cases(double *value, int cases)
+{
+    int expo = pow(10, cases);
+    *value = (round(*value * expo))/expo;
 }

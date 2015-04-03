@@ -4,10 +4,10 @@ Stats_Monthly::Stats_Monthly(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::Stats_Monthly)
 {
+    ui->setupUi(this);
+
     setWindowTitle("Monthly Statistics");
 
-
-    ui->setupUi(this);
     stats_monthly_month = ui->stats_monthly_month;
     stats_monthly_year = ui->stats_monthly_year;
     stats_monthly_label_from = ui->stats_monthly_label;
@@ -59,28 +59,36 @@ void Stats_Monthly::update_graph()
     /* returns the y axis, based on the month days */
     y = get_hours(month_days, pos);
 
-    int total_hours = 0, working_days = 0;
+    double total_hours = 0;
+    int working_days = 0;
+
     for (int i = 0; i < month_days; i++) {
         if(y[i] > 0) {
             working_days ++;
             total_hours += y[i];
         }
+        /* setting decimal cases to 2 */
+        decimal_cases(&y[i], 2);
     }
-
-    stats_monthly_total_hours->setText(QString::number(total_hours));
-    if (working_days != 0)
-        stats_monthly_average_hours->setText(QString::number(total_hours / working_days));
-    else
-        stats_monthly_average_hours->setText(QString::number(0));
-    stats_monthly_working_days->setText(QString::number(working_days));
 
     for (int i = 0; i < month_days; i++){
         if (working_days != 0)
             y_av[i] = total_hours / working_days;
         else
             y_av[i] = 0;
+
+        /* setting decimal cases to 2 */
+        decimal_cases(&y_av[i], 2);
         x[i] = i+1;
     }
+
+    total_hours = (round(total_hours * 100))/100;
+    stats_monthly_total_hours->setText(QString::number(total_hours));
+    if (working_days != 0)
+        stats_monthly_average_hours->setText(QString::number(y_av[0]));
+    else
+        stats_monthly_average_hours->setText(QString::number(0));
+    stats_monthly_working_days->setText(QString::number(working_days));
 
     QString label = "From: " +
             QString::number(pos[0].day)     + " "   +
@@ -103,20 +111,21 @@ void Stats_Monthly::update_graph()
     graph->clearGraphs();
     graph->clearItems();
 
+    /* average hours graph */
     graph->addGraph();
     graph->legend->setVisible(true);
     graph->graph(0)->setData(x, y);
-    pen.setColor(QColor(30, 40, 255, 150));
-    graph->graph(0)->setLineStyle(QCPGraph::lsLine);
+    pen.setColor(QColor(0, 255, 0, 150));
+    graph->graph(0)->setLineStyle(QCPGraph::lsNone);
     graph->graph(0)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssDisc, 5));
-    pen.setWidthF(2);
+    pen.setWidthF(5);
     graph->graph(0)->setPen(pen);
-    graph->graph(0)->setName("Working Hours");
+    graph->graph(0)->setName("Daily Hours");
 
     /* average hours graph */
     graph->addGraph();
     graph->graph(1)->setData(x, y_av);
-    pen.setColor(QColor(255, 40, 0, 150));
+    pen.setColor(QColor(0, 153, 51, 150));
     pen.setStyle(Qt::DotLine);
     pen.setWidthF(2);
     graph->graph(1)->setPen(pen);
@@ -186,7 +195,7 @@ QVector<double> Stats_Monthly::get_hours(int days, sw_pos sel_pos[])
             qDebug() << "*** ERROR: db->query ***";
             y[i] = 0;
         } else {
-            y[i] = sel_hours + sel_minutes / 60 + sel_seconds / 3600;
+            y[i] = sel_hours + ((double) sel_minutes) / 60 + ((double) sel_seconds) / 3600;
         }
     }
     return y;

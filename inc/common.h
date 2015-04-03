@@ -10,6 +10,7 @@ struct sw_pos{
 };
 
 int days_in_month(int, int);
+void decimal_cases(double*, int);
 QString month_to_string(int);
 
 #endif // COMMON_H
