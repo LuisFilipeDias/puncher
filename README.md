@@ -14,12 +14,8 @@ It has 5 different views:
 
 This program can be built both for:
 
-* Linux, using standard QT process & buildsystem;
-* Windows, using qmake from command line. For more information following the cross-compilation tips in a section below;
-
-## Code Example
-
-Show what the library does as concisely as possible, developers should be able to figure out **how** your project solves their problem by looking at the code example. Make sure the API you are showing off is obvious, and that your code is short and concise.
+* **Linux**: using standard QT process & buildsystem;
+* **Windows**: using qmake from command line. For more information follow the cross-compilation tips below;
 
 ## Motivation
 
@@ -29,18 +25,13 @@ There was no existing application that met the specific requirements at the time
 
 The motivation to log the hours comes not from company policies but from the need to self-manage the working hours (and to discourage too much extra-hours).
 
-
 ## Installation
 
-Provide code examples and explanations of how to get the project.
-
-## API Reference
-
-Depending on the size of the project, if it is small and simple enough the reference docs can be added to the README. For medium size to larger projects it is important to at least provide a link to where the API reference docs live.
+To install just clone the project into your machine, and launch the .pro file from the QT Creator;
 
 ## Tests
 
-Describe and show how to run the tests with code examples.
+No unit-tests have been specified yet.
 
 ## Contributors
 
@@ -48,15 +39,43 @@ Describe and show how to run the tests with code examples.
 
 all contacts available @ www.luisfilipedias.tk
 
-To contribute:
+To contribute just fork this project and then make a pull request whenever there are significative changes to merge the development branch into the master.
 
 ## License
 
-A short snippet describing the license (MIT, Apache, etc.)
+**GNU General Public License v3.0**
 
+The GNU General Public License is a free, copyleft license for software and other kinds of works.
 
 ## Cross-compilation tips
 
-To cross-compile from linux to windows, use MXE: http://mxe.cc/
+To cross-compile on **Linux** targeting **windows**, use MXE: http://mxe.cc/.
 
-It uses qmake. Instructions can be found here: http://stackoverflow.com/questions/10934683/how-do-i-configure-qt-for-cross-compilation-from-linux-to-windows-target
+**Instructions:**
+
+* Get it:
+
+>> git clone -b stable https://github.com/mxe/mxe.git
+
+* Install build dependencies
+
+* Build Qt 5 for Windows:
+
+>> cd mxe && make qt
+
+* This will first build its dependencies and the cross-build tools; It should take less than an hour on a fast machine with decent internet access.
+Due to the new modular nature of Qt 5, various major Qt components are now in different tarballs. The one selected above, qtbase, should give you enough functionality to run ordinary GUI apps, which is all I needed for my own (smallish) app.
+If you want to build all of Qt 5 instead, you'll need to run make qt5 (instead of make qtbase). Note that it will take a lot longer to complete, so be sure that you need the extra functionality.
+
+>> export PATH=<mxe root>/usr/bin:$PATH
+
+* Get to the directory of your app, and run the Qt Makefile generator tool:
+
+>> <mxe root>/usr/bin/i686-w64-mingw32.static-qmake-qt5
+
+* You should find the binary in the ./release directory:
+
+>> wine release/foo.exe
+
+
+(Copyright: http://stackoverflow.com/questions/10934683/how-do-i-configure-qt-for-cross-compilation-from-linux-to-windows-target)
