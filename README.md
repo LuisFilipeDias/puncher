@@ -37,7 +37,7 @@ No unit-tests have been specified yet.
 
 * Luis Filipe Ribeiro Dias
 
-all contacts available @ www.luisfilipedias.tk
+All contacts are available @ www.luisfilipedias.tk
 
 To contribute just fork this project and then make a pull request whenever there are significative changes to merge the development branch into the master.
 
@@ -55,27 +55,27 @@ To cross-compile on **Linux** targeting **windows**, use MXE: http://mxe.cc/.
 
 * Get it:
 
->> git clone -b stable https://github.com/mxe/mxe.git
+> git clone -b stable https://github.com/mxe/mxe.git
 
 * Install build dependencies
 
 * Build Qt 5 for Windows:
 
->> cd mxe && make qt
+> cd mxe && make qt
 
 * This will first build its dependencies and the cross-build tools; It should take less than an hour on a fast machine with decent internet access.
 Due to the new modular nature of Qt 5, various major Qt components are now in different tarballs. The one selected above, qtbase, should give you enough functionality to run ordinary GUI apps, which is all I needed for my own (smallish) app.
 If you want to build all of Qt 5 instead, you'll need to run make qt5 (instead of make qtbase). Note that it will take a lot longer to complete, so be sure that you need the extra functionality.
 
->> export PATH=<mxe root>/usr/bin:$PATH
+> export PATH=<mxe root>/usr/bin:$PATH
 
 * Get to the directory of your app, and run the Qt Makefile generator tool:
 
->> <mxe root>/usr/bin/i686-w64-mingw32.static-qmake-qt5
+> <mxe root>/usr/bin/i686-w64-mingw32.static-qmake-qt5
 
 * You should find the binary in the ./release directory:
 
->> wine release/foo.exe
+> wine release/foo.exe
 
 
-(Copyright: http://stackoverflow.com/questions/10934683/how-do-i-configure-qt-for-cross-compilation-from-linux-to-windows-target)
+(**Copyright**: http://stackoverflow.com/questions/10934683/how-do-i-configure-qt-for-cross-compilation-from-linux-to-windows-target)
