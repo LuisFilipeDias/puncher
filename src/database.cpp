@@ -8,7 +8,7 @@ status database::init()
 {
     QSqlDatabase sql_db = QSqlDatabase::addDatabase( "QSQLITE" );
 
-    sql_db.setDatabaseName( "./puncher_new.db" );
+    sql_db.setDatabaseName( "/home/luisfilipedias/puncher.db" );
 
     if( !sql_db.open() )
     {

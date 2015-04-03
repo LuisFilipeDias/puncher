@@ -132,7 +132,7 @@ void Stats_Monthly::update_graph()
     graph->graph(1)->setName("Average");
 
     // give the axes some labels:
-    graph->yAxis->setLabel("Work Hours");
+    graph->yAxis->setLabel("Daily Hours");
     // set axes ranges, so we see all data:
     graph->xAxis->setRange(0, month_days + 1);
     graph->yAxis->setRange(0, 12);
