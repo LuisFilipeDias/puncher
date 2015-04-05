@@ -44,10 +44,10 @@ public:
     {
         if (edit_dialog->objectName().isEmpty())
             edit_dialog->setObjectName(QStringLiteral("edit_dialog"));
-        edit_dialog->resize(276, 103);
+        edit_dialog->resize(301, 103);
         verticalLayoutWidget = new QWidget(edit_dialog);
         verticalLayoutWidget->setObjectName(QStringLiteral("verticalLayoutWidget"));
-        verticalLayoutWidget->setGeometry(QRect(10, 10, 257, 80));
+        verticalLayoutWidget->setGeometry(QRect(10, 10, 275, 80));
         verticalLayout = new QVBoxLayout(verticalLayoutWidget);
         verticalLayout->setObjectName(QStringLiteral("verticalLayout"));
         verticalLayout->setContentsMargins(0, 0, 0, 0);
@@ -101,7 +101,6 @@ public:
 
         verticalLayout->addLayout(horizontalLayout);
 
-        verticalLayoutWidget->raise();
 
         retranslateUi(edit_dialog);
 

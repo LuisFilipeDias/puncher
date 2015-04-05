@@ -9,6 +9,7 @@ INPUT(
 ./debug/stats_monthly.o
 ./debug/qcustomplot.o
 ./debug/common.o
+./debug/filepath.o
 ./debug/puncher_plugin_import.o
 ./debug/moc_puncher.o
 ./debug/moc_data_raw.o
@@ -17,4 +18,5 @@ INPUT(
 ./debug/moc_stats_weekly.o
 ./debug/moc_stats_monthly.o
 ./debug/moc_qcustomplot.o
+./debug/moc_filepath.o
 );

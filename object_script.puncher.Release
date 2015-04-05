@@ -9,6 +9,7 @@ INPUT(
 ./release/stats_monthly.o
 ./release/qcustomplot.o
 ./release/common.o
+./release/filepath.o
 ./release/puncher_plugin_import.o
 ./release/moc_puncher.o
 ./release/moc_data_raw.o
@@ -17,4 +18,5 @@ INPUT(
 ./release/moc_stats_weekly.o
 ./release/moc_stats_monthly.o
 ./release/moc_qcustomplot.o
+./release/moc_filepath.o
 );
