@@ -21,6 +21,8 @@
 #include "edit_dialog.h"
 #include "stats_weekly.h"
 #include "stats_monthly.h"
+#include "filepath.h"
+
 
 namespace Ui {
 class Puncher;
@@ -33,6 +35,7 @@ class Puncher : public QMainWindow
 public:
     explicit Puncher(QWidget *parent = 0);
     ~Puncher();
+    QString database_name;
 
 private:
     database *db;
@@ -63,6 +66,8 @@ private slots:
 
 public slots:
     status get_hours(int, int, int);
+    void get_db_name(QString *);
+    void set_db_name(QString);
 };
 
 

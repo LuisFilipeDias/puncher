@@ -12,11 +12,6 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
-    database *db = new database();
-
-    if (status_ok != db->init())
-        qDebug() << "*** ERROR: db->init ***";
-
     Puncher w;
     w.show();
 

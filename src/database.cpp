@@ -4,22 +4,102 @@ database::database()
 {
 }
 
-status database::init()
+status database::init(QString db_name)
 {
     QSqlDatabase sql_db = QSqlDatabase::addDatabase( "QSQLITE" );
 
-    sql_db.setDatabaseName( "/home/luisfilipedias/puncher.db" );
-
-    if( !sql_db.open() )
-    {
+    /* application database */
+    sql_db.setDatabaseName(db_name);
+    if( !sql_db.open() ) {
       qDebug() << sql_db.lastError();
       qFatal( "Failed to connect." );
     }
-
-    qDebug( "Connected!" );
+    qDebug( "Connected to data db!" );
 
     return status_ok;
 }
+
+status database::get_db_path(QString *result)
+{
+    QSqlDatabase sql_db = QSqlDatabase::addDatabase( "QSQLITE" );
+    QSqlQuery qry;
+
+    /* database location database */
+    sql_db.setDatabaseName( "db_loc.db" );
+    if( !sql_db.open() ) {
+      qDebug() << sql_db.lastError();
+      qFatal( "Failed to connect." );
+    }
+    qry.prepare( "CREATE TABLE IF NOT EXISTS location_db (id INTEGER UNIQUE PRIMARY KEY, loc VARCHAR(50))" );
+    if (!qry.exec())
+        qDebug() << qry.lastError();
+    else
+        qDebug() << "All ok!";
+
+    qry.prepare( "SELECT * FROM location_db" );
+    if( !qry.exec() )
+      qDebug() << qry.lastError();
+    else
+    {
+      qDebug( "Selected!" );
+      QSqlRecord rec = qry.record();
+      int rows = 0;
+      for( int r=0; qry.next(); r++ )
+        rows ++;
+      if( rows != 0)
+          *result = "A";
+    }
+
+    *result = "INVALID";
+
+    return status_ok;
+}
+
+status database::update_db_path(QString result)
+{
+    QSqlDatabase sql_db = QSqlDatabase::addDatabase( "QSQLITE" );
+    QSqlQuery qry;
+    int rows;
+
+    /* database location database */
+    sql_db.setDatabaseName( "db_loc.db" );
+    if( !sql_db.open() ) {
+      qDebug() << sql_db.lastError();
+      qFatal( "Failed to connect." );
+    }
+    QString qry_str = "SELECT * FROM location_db";
+
+    qry.prepare(qry_str);
+
+    if (!qry.exec()) {
+        qDebug() << qry.lastError();
+    } else {
+        for( rows=0; qry.next(); rows++ );
+    }
+
+    if (rows) {
+        QString qry_str = "UPDATE location_db SET loc='" +
+                result   + "'";
+
+        qry.prepare(qry_str);
+        if (!qry.exec())
+            qDebug() << qry.lastError();
+        else
+            qDebug() << "Updated row!";
+    } else {
+        qry_str = "INSERT INTO location_db (loc) VALUES (" +
+                result     + ")";
+
+        qry.prepare(qry_str);
+        if (!qry.exec())
+            qDebug() << qry.lastError();
+        else
+            qDebug() << "Inserted new row!";
+    }
+
+    return status_ok;
+}
+
 
 status database::insert(int l_day, int l_month, int l_year, int l_hours, int l_minutes, int l_seconds)
 {

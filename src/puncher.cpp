@@ -73,6 +73,26 @@ Puncher::~Puncher()
 
 status Puncher::init()
 {
+    database *db = new database();
+
+    if (status_ok != db->get_db_path(&database_name))
+        qDebug() << "*** ERROR: db->get_db_path ***";
+
+    if (database_name == "INVALID") {
+        FilePath *db_loc = new FilePath();
+
+        /* connecting signals and slot from different classes */
+        connect(db_loc, SIGNAL(get_db_name(QString *)), this, SLOT(get_db_name(QString *)));
+        connect(db_loc, SIGNAL(set_db_name(QString)), this, SLOT(set_db_name(QString)));
+
+        db_loc->setModal(true);
+        db_loc->exec();
+
+    }
+    if (status_ok != db->init(database_name))
+        qDebug() << "*** ERROR: db->init ***";
+
+
     /* resetting the time for the day */
     seconds = minutes = hours = 0;
 
@@ -303,3 +323,19 @@ status Puncher::get_hours(int l_hours, int l_minutes, int l_seconds)
     return status_ok;
 }
 
+void Puncher::set_db_name(QString new_name)
+{
+    qDebug() << ":: set_db_name ::";
+
+    if (status_ok != db->update_db_path(database_name))
+        qDebug() << "*** ERROR: db->update_db_path ***";
+
+    database_name = new_name;
+}
+
+void Puncher::get_db_name(QString *new_name)
+{
+    qDebug() << ":: set_db_name ::";
+
+    *new_name = database_name;
+}

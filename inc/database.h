@@ -12,7 +12,9 @@ class database
 {
 public:
     database();
-    status init();
+    status init(QString);
+    status get_db_path(QString*);
+    status update_db_path(QString);
     QSqlQuery get_all();
     status insert(int, int, int, int, int, int);
     status query(int, int, int, int*, int*, int*);
